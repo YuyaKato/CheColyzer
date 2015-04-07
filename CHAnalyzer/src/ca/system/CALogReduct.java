@@ -12,6 +12,7 @@ import clib.common.table.CCSVFileIO;
 
 public class CALogReduct {
 	
+	private String user = "";
 	private int totalLoginTime = 0;
 	private int allImportCount = 0;
 	private int javaImportCount = 0;
@@ -22,14 +23,21 @@ public class CALogReduct {
 	 ************************/
 	public List<List<String>> loadCSV(File file) {
 		
+		getUserFromFile(file);
 		List<List<String>> table = new ArrayList<List<String>>();
 		table = CCSVFileIO.loadAsListList(CFileSystem.findFile(file.getAbsolutePath()));
 		return table;
 	}
 	
-	/******************
-	 * 総ログイン時間の計算
-	 ******************/
+	public void getUserFromFile(File file) {
+		String str = file.getName();
+		str = str.substring(0, str.indexOf("_"));
+		setUser(str);
+	}
+	
+	/*************
+	 * 各値のカウント
+	 *************/
 	public void reduct(List<List<String>> table) {
 		
 		boolean login = false;
@@ -81,6 +89,14 @@ public class CALogReduct {
 		return -1;
 	}
 	
+	public String getUser() {
+		return user;
+	}
+
+	public void setUser(String user) {
+		this.user = user;
+	}
+
 	public int getTotalLoginTime() {
 		return totalLoginTime;
 	}

@@ -1,6 +1,8 @@
 package ca.view;
 
 import java.io.File;
+import java.util.List;
+
 import javafx.stage.FileChooser;
 
 public class CAFileChooser {
@@ -12,7 +14,7 @@ public class CAFileChooser {
 		fc.setTitle("select log file");
 	}
 	
-	public File open() {
-		return fc.showOpenDialog(null);
+	public List<File> open() {
+		return fc.showOpenMultipleDialog(null);
 	}
 }
