@@ -8,30 +8,40 @@ import javafx.concurrent.Task;
 
 public class CATask extends Task<Void> {
 
-	private List<File> files = new ArrayList<File>();
-	private List<CALogReduct> lrs = new ArrayList<CALogReduct>();
+	private List<File> lFiles = new ArrayList<File>();
+	private File qFile;
+	private List<CAResult> results = new ArrayList<CAResult>();
 	
-	public CATask(List<File> files) {
+	public CATask(List<File> lFiles, File qFile) {
 		super();
-		this.files = files;
+		this.lFiles = lFiles;
+		this.qFile = qFile;
 	}
 	
 	@Override
 	protected Void call() throws Exception {
-		for (File file : files) {
-			lrs.add(reduct(file));
+		for (File lFile : lFiles) {
+			CALogReduct lr = lReduct(lFile);
+			CAQuestionnaireReduct qr = qReduct(qFile, lr.getUser());
+			results.add(new CAResult(lr, qr));
 		}
 		return null;
 	}
 	
-	public CALogReduct reduct(File file) {
+	public CALogReduct lReduct(File file) {
 		CALogReduct lr = new CALogReduct();
 		lr.reduct(lr.loadCSV(file));
 		return lr;
 	}
+	
+	public CAQuestionnaireReduct qReduct(File file, String user) {
+		CAQuestionnaireReduct qr = new CAQuestionnaireReduct();
+		qr.reduct(qr.search(qr.loadCSV(file), user));
+		return qr;
+	}
 
-	public List<CALogReduct> getLrs() {
-		return lrs;
+	public List<CAResult> getResults() {
+		return results;
 	}
 
 }

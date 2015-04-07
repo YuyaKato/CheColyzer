@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-import ca.system.CALogReduct;
+import ca.system.CAResult;
 import ca.system.CATask;
 import ca.view.CAFileChooser;
 import javafx.application.Application;
@@ -36,40 +36,67 @@ public class CAApplication extends Application{
 		open(primaryStage);
 	}
 
+	List<File> lFiles = new ArrayList<File>();
+	File qFile;
+	
 	public void initialize(Stage primaryStage) {
 		
-		Button fileSelectButton = new Button("File select");
+		Button lFileSelectButton = new Button("Log File");
+		Button qFileSelectButton = new Button("Questionnaire File");
+		Button analyzeButton = new Button("Analyze");
 		VBox vbox = new VBox();
 		StackPane root = new StackPane();
 		Scene scene;
 		ProgressIndicator indicator = new ProgressIndicator();
+		CAFileChooser fc = new CAFileChooser();
+		
+		lFileSelectButton.setOnAction(new EventHandler<ActionEvent>() {
 
-		fileSelectButton.setOnAction(new EventHandler<ActionEvent>() {
-			
 			@Override
 			public void handle(ActionEvent arg0) {
+				// TODO 拡張子チェック
+				lFiles = fc.openMultiple();
+				for (File lFile : lFiles) {
+					System.out.println("Log File : " + lFile.getName());
+				}
+			}
+		});
+		
+		qFileSelectButton.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent arg0) {
+				// TODO 拡張子チェック
+				qFile = fc.openSingle();
+				System.out.println("Questionnaire File : " + qFile.getName());
+			}
+		});
+
+		analyzeButton.setOnAction(new EventHandler<ActionEvent>() {
+			
+			@Override
+			public void handle(ActionEvent arg0) {	
 				
-				CAFileChooser fc = new CAFileChooser();
-				List<File> files = new ArrayList<File>();
-				files = fc.open();
-				if (files.size() > 0 && files.size() <= MAX_MEMBER) {
+				if (lFiles.size() > 0 && lFiles.size() <= MAX_MEMBER && qFile != null) {
 					indicator.setVisible(true);
 					
-					CATask caTask = new CATask(files);
+					CATask caTask = new CATask(lFiles, qFile);
 					
 					caTask.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
 
 						@Override
 						public void handle(WorkerStateEvent arg0) {
-							List<CALogReduct> lrs = new ArrayList<CALogReduct>();
+							List<CAResult> results = new ArrayList<CAResult>();
 							indicator.setVisible(false);
-							lrs = caTask.getLrs();
-							for (CALogReduct lr : lrs) {
-								System.out.println("User Name       : " + lr.getUser());
-								System.out.println("Total Login     : " + lr.getTotalLoginTime() + " minutes");
-								System.out.println("All Import      : " + lr.getAllImportCount() + " times");
-								System.out.println("Java Import     : " + lr.getJavaImportCount() + " times");
-								System.out.println("Resource Import : " + lr.getMaterialImportCount() + " times");
+							results = caTask.getResults();
+							for (CAResult result : results) {
+								System.out.println("User Name        : " + result.getLr().getUser());
+								System.out.println("Total Login      : " + result.getLr().getTotalLoginTime() + " minutes");
+								System.out.println("All Import       : " + result.getLr().getAllImportCount() + " times");
+								System.out.println("Java Import      : " + result.getLr().getJavaImportCount() + " times");
+								System.out.println("Resource Import  : " + result.getLr().getMaterialImportCount() + " times");
+								System.out.println("Skill Rank       : " + result.getQr().getSkillRank());
+								System.out.println("Description Rate : " + result.getQr().getDescriptionRate() + " %");
 							}
 						}
 					});
@@ -80,18 +107,12 @@ public class CAApplication extends Application{
 			}
 		});
 		
-		vbox.getChildren().addAll(fileSelectButton, indicator);
+		vbox.getChildren().addAll(lFileSelectButton, qFileSelectButton, analyzeButton, indicator);
 		root.getChildren().addAll(vbox);
 		scene = new Scene(root, 300, 250);
 		primaryStage.setTitle(APP_NAME);
 		primaryStage.setScene(scene);
 		indicator.setVisible(false);
-	}
-	
-	public CALogReduct reduct(File file) {
-		CALogReduct lr = new CALogReduct();
-		lr.reduct(lr.loadCSV(file));
-		return lr;
 	}
 	
 	public void open(Stage primaryStage) {

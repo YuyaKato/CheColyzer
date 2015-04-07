@@ -11,10 +11,16 @@ public class CAFileChooser {
 	
 	public CAFileChooser() {
 		fc = new FileChooser();
-		fc.setTitle("select log file");
+		fc.setTitle("select file");
 	}
 	
-	public List<File> open() {
+	public List<File> openMultiple() {
+		fc.setTitle("select log files");
 		return fc.showOpenMultipleDialog(null);
+	}
+	
+	public File openSingle() {
+		fc.setTitle("select questionnaire file");
+		return fc.showOpenDialog(null);
 	}
 }
