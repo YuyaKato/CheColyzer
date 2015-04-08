@@ -18,9 +18,11 @@ public class CALogReduct {
 	private int javaImportCount = 0;
 	private int materialImportCount = 0;
 
-	/************************
-	 * CSVファイルのロード（リスト形式）
-	 ************************/
+	/********************************
+	 * CSVファイルのロード
+	 * @param file CSVファイル
+	 * @return List<List<String>形式
+	 ********************************/
 	public List<List<String>> loadCSV(File file) {
 		
 		getUserFromFile(file);
@@ -29,15 +31,20 @@ public class CALogReduct {
 		return table;
 	}
 	
+	/**********************
+	 * ファイル名から学籍番号取得
+	 * @param file ログCSV
+	 **********************/
 	public void getUserFromFile(File file) {
 		String str = file.getName();
 		str = str.substring(0, str.indexOf("_"));
 		setUser(str);
 	}
 	
-	/*************
-	 * 各値のカウント
-	 *************/
+	/*******************
+	 * 分析対象の値のカウント
+	 * @param table
+	 *******************/
 	public void reduct(List<List<String>> table) {
 		
 		boolean login = false;
@@ -72,10 +79,14 @@ public class CALogReduct {
 		setMaterialImportCount(materialImportCount);
 	}
 	
-	/*************************
-	 * 開始時刻と終了時刻の差を計算
-	 *************************/
-	public long calcTime(String startTime, String endTime) {
+
+	/**
+	 * 開始時間と終了時間の差を計算
+	 * @param startTime
+	 * @param endTime
+	 * @return 時間差（秒）
+	 */
+	private long calcTime(String startTime, String endTime) {
 		
 		try {
 			Date start = DateFormat.getDateTimeInstance().parse(startTime);

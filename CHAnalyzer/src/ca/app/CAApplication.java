@@ -9,6 +9,7 @@ import java.util.concurrent.Executors;
 import ca.system.CAResult;
 import ca.system.CATask;
 import ca.view.CAFileChooser;
+import ca.view.CATableView;
 import javafx.application.Application;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
@@ -17,6 +18,7 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ProgressIndicator;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -26,7 +28,9 @@ public class CAApplication extends Application{
 	public static final int MAX_MEMBER = 3;
 	
 	private Scene fileSelect = null;
-	private Scene resultTable = null;
+	private CATableView resultTable = null;
+	private List<File> lFiles = new ArrayList<File>();
+	private File qFile;
 
 	@Override
 	public void start(Stage stage) throws Exception {
@@ -37,10 +41,11 @@ public class CAApplication extends Application{
 		stage.setScene(fileSelect);
 		stage.show();
 	}
-
-	List<File> lFiles = new ArrayList<File>();
-	File qFile;
 	
+	/*****************************
+	 * ファイル選択画面（初期画面）の初期化
+	 * @param stage
+	 *****************************/
 	public void initFileSelectScene(Stage stage) {
 		
 		Button lFileSelectButton = new Button("Log File");
@@ -92,15 +97,8 @@ public class CAApplication extends Application{
 							List<CAResult> results = new ArrayList<CAResult>();
 							indicator.setVisible(false);
 							results = caTask.getResults();
-							for (CAResult result : results) {
-								System.out.println("User Name        : " + result.getLr().getUser());
-								System.out.println("Total Login      : " + result.getLr().getTotalLoginTime() + " minutes");
-								System.out.println("All Import       : " + result.getLr().getAllImportCount() + " times");
-								System.out.println("Java Import      : " + result.getLr().getJavaImportCount() + " times");
-								System.out.println("Resource Import  : " + result.getLr().getMaterialImportCount() + " times");
-								System.out.println("Skill Rank       : " + result.getQr().getSkillRank());
-								System.out.println("Description Rate : " + result.getQr().getDescriptionRate() + " %");
-							}
+							resultTable.init();
+							resultTable.makeList(results);
 							stage.setScene(resultTable);
 							stage.show();
 						}
@@ -117,12 +115,17 @@ public class CAApplication extends Application{
 		indicator.setVisible(false);
 	}
 	
+	/*******************
+	 * 分析結果画面の初期化
+	 * @param stage
+	 *******************/
 	public void initResultTableScene(Stage stage) {
-		Group root = new Group();
-		resultTable = new Scene(root, 500, 500);
+		StackPane root = new StackPane();
+		resultTable = new CATableView(root, 600, 500);
 		VBox vBox = new VBox();
 		Button returnButton = new Button("return");
 		
+		//TODO returnボタンで戻って再検索すると値余分？
 		returnButton.setOnAction(new EventHandler<ActionEvent>() {
 
 			@Override
@@ -132,6 +135,7 @@ public class CAApplication extends Application{
 			}
 		});
 		
+		vBox.getChildren().add(resultTable.getTableView());
 		vBox.getChildren().add(returnButton);
 		root.getChildren().add(vBox);
 	}

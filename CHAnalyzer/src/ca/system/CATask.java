@@ -28,13 +28,13 @@ public class CATask extends Task<Void> {
 		return null;
 	}
 	
-	public CALogReduct lReduct(File file) {
+	private CALogReduct lReduct(File file) {
 		CALogReduct lr = new CALogReduct();
 		lr.reduct(lr.loadCSV(file));
 		return lr;
 	}
 	
-	public CAQuestionnaireReduct qReduct(File file, String user) {
+	private CAQuestionnaireReduct qReduct(File file, String user) {
 		CAQuestionnaireReduct qr = new CAQuestionnaireReduct();
 		qr.reduct(qr.search(qr.loadCSV(file), user));
 		return qr;

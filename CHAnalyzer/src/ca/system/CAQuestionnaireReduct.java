@@ -27,6 +27,10 @@ public class CAQuestionnaireReduct {
 		return table;
 	}
 	
+	/******************
+	 * 分析対象の値の取得
+	 * @param cells
+	 ******************/
 	public void reduct(List<String> cells) {
 		String skillRank = cells.get(INDEX_OF_SKILLRANK);
 		String descriptionRate = cells.get(INDEX_OF_DESCRIPTIONRATE);
@@ -35,8 +39,15 @@ public class CAQuestionnaireReduct {
 		this.descriptionRate = Integer.parseInt(descriptionRate);
 	}
 	
+	/***********************************
+	 * アンケートから学籍番号を使って回答検索
+	 * @param table アンケート結果CSVのList
+	 * @param user 検索対象
+	 * @return 対象行
+	 ***********************************/
 	public List<String> search(List<List<String>> table, String user) {
 		
+		// TODO アンケート回答していなかった場合の処理（逆も）
 		for (List<String> cells : table) {
 			if (cells.get(INDEX_OF_USER).equals(user)) {
 				return cells;
