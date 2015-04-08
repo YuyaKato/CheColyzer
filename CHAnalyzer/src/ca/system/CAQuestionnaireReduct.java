@@ -34,7 +34,9 @@ public class CAQuestionnaireReduct {
 	public void reduct(List<String> cells) {
 		String skillRank = cells.get(INDEX_OF_SKILLRANK);
 		String descriptionRate = cells.get(INDEX_OF_DESCRIPTIONRATE);
-		skillRank = skillRank.substring(0, 1);
+		if (!skillRank.equals("-1")) {
+			skillRank = skillRank.substring(0, 1);
+		}
 		this.skillRank = Integer.parseInt(skillRank);
 		this.descriptionRate = Integer.parseInt(descriptionRate);
 	}
@@ -53,7 +55,12 @@ public class CAQuestionnaireReduct {
 				return cells;
 			}
 		}
-		return null;
+		List<String> defCells = new ArrayList<String>();
+		defCells.add(user);
+		for (int i=0; i<11; i++){
+			defCells.add("-1");
+		}
+		return defCells;
 	}
 
 	public int getSkillRank() {

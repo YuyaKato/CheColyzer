@@ -17,9 +17,10 @@ import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class CAApplication extends Application{
@@ -53,10 +54,12 @@ public class CAApplication extends Application{
 		Button analyzeButton = new Button("Analyze");
 		VBox vbox = new VBox();
 		Group root = new Group();
-		ProgressIndicator indicator = new ProgressIndicator();
 		CAFileChooser fc = new CAFileChooser();
+		ProgressBar progressBar = new ProgressBar(0);
+		Text progressText = new Text("");
 		
 		fileSelect = new Scene(root, 200, 200);
+		progressBar.setVisible(false);
 		
 		lFileSelectButton.setOnAction(new EventHandler<ActionEvent>() {
 
@@ -85,17 +88,22 @@ public class CAApplication extends Application{
 			@Override
 			public void handle(ActionEvent arg0) {	
 				
-				if (lFiles.size() > 0 && lFiles.size() <= MAX_MEMBER && qFile != null) {
-					indicator.setVisible(true);
+				if (lFiles.size() > 0 && qFile != null) {
 					
 					CATask caTask = new CATask(lFiles, qFile);
+					
+					progressBar.progressProperty().unbind();
+					progressBar.progressProperty().bind(caTask.progressProperty());
+					progressText.textProperty().bind(caTask.messageProperty());
+					
+					progressBar.setVisible(true);
 					
 					caTask.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
 
 						@Override
 						public void handle(WorkerStateEvent arg0) {
+							progressBar.setVisible(false);
 							List<CAResult> results = new ArrayList<CAResult>();
-							indicator.setVisible(false);
 							results = caTask.getResults();
 							resultTable.init();
 							resultTable.makeList(results);
@@ -110,9 +118,8 @@ public class CAApplication extends Application{
 			}
 		});
 		
-		vbox.getChildren().addAll(lFileSelectButton, qFileSelectButton, analyzeButton, indicator);
+		vbox.getChildren().addAll(lFileSelectButton, qFileSelectButton, analyzeButton, progressBar, progressText);
 		root.getChildren().addAll(vbox);
-		indicator.setVisible(false);
 	}
 	
 	/*******************

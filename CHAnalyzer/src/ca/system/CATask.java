@@ -20,11 +20,16 @@ public class CATask extends Task<Void> {
 	
 	@Override
 	protected Void call() throws Exception {
+		int i = 0;
 		for (File lFile : lFiles) {
+			updateProgress(i, lFiles.size());
+			updateMessage(String.format("analyzing %d/%d", i, lFiles.size()));
 			CALogReduct lr = lReduct(lFile);
 			CAQuestionnaireReduct qr = qReduct(qFile, lr.getUser());
 			results.add(new CAResult(lr, qr));
+			i++;
 		}
+		updateMessage("Done");
 		return null;
 	}
 	
