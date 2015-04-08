@@ -15,7 +15,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 
 public class CATableView extends Scene {
 	
-	private final ObservableList<Standings> data = FXCollections.observableArrayList(new Standings("", 0, 0, 0, 0, 0, 0));
+	private final ObservableList<Standings> data = FXCollections.observableArrayList(new Standings("", 0, 0, 0, 0, 0, 0, 0, 0));
 	private TableView<Standings> tableView = new TableView<Standings>();
 	
 	public CATableView(Parent arg0, double arg1, double arg2) {
@@ -41,13 +41,21 @@ public class CATableView extends Scene {
 		aicCol.setMinWidth(30);
 		aicCol.setCellValueFactory(new PropertyValueFactory<Standings, Integer>("allImport"));
 		
-		TableColumn<Standings, Integer> jicCol = new TableColumn<Standings, Integer>("Import(JA)");
+		TableColumn<Standings, Integer> jicCol = new TableColumn<Standings, Integer>("Import(Jw)");
 		jicCol.setMinWidth(30);
 		jicCol.setCellValueFactory(new PropertyValueFactory<Standings, Integer>("javaImport"));
 		
 		TableColumn<Standings, Integer> ricCol = new TableColumn<Standings, Integer>("Import(R)");
 		ricCol.setMinWidth(30);
 		ricCol.setCellValueFactory(new PropertyValueFactory<Standings, Integer>("resourceImport"));
+		
+		TableColumn<Standings, Integer> picCol = new TableColumn<Standings, Integer>("Import(Jp)");
+		picCol.setMinWidth(30);
+		picCol.setCellValueFactory(new PropertyValueFactory<Standings, Integer>("partialImport"));
+		
+		TableColumn<Standings, Integer> pilCol = new TableColumn<Standings, Integer>("ImportLine");
+		pilCol.setMinWidth(30);
+		pilCol.setCellValueFactory(new PropertyValueFactory<Standings, Integer>("importLine"));
 		
 		TableColumn<Standings, Integer> srCol = new TableColumn<Standings, Integer>("Skill");
 		srCol.setMinWidth(30);
@@ -57,7 +65,7 @@ public class CATableView extends Scene {
 		drCol.setMinWidth(30);
 		drCol.setCellValueFactory(new PropertyValueFactory<Standings, Integer>("descriptionRate"));
 		
-		tableView.getColumns().addAll(studentIDCol, tltCol, aicCol, jicCol, ricCol, srCol, drCol);
+		tableView.getColumns().addAll(studentIDCol, tltCol, aicCol, jicCol, ricCol, picCol, pilCol, srCol, drCol);
 	}
 	
 	/***************************
@@ -70,6 +78,8 @@ public class CATableView extends Scene {
 		int allImport;
 		int javaImport;
 		int resourceImport;
+		int partialImport;
+		int importLine;
 		int skillRank;
 		int descriptionRate;
 		
@@ -80,9 +90,12 @@ public class CATableView extends Scene {
 			allImport = result.getLr().getAllImportCount();
 			javaImport = result.getLr().getJavaImportCount();
 			resourceImport = result.getLr().getMaterialImportCount();
+			partialImport = result.getLr().getPartialImportCount();
+			importLine = result.getLr().getPartialImportLine();
 			skillRank = result.getQr().getSkillRank();
 			descriptionRate = result.getQr().getDescriptionRate();
-			data.add(new Standings(studentID, totalLoginTime, allImport, javaImport, resourceImport, skillRank, descriptionRate));
+			data.add(new Standings(studentID, totalLoginTime, allImport, javaImport, resourceImport,
+					partialImport, importLine, skillRank, descriptionRate));
 		}
 		tableView.setItems(data);
 	}
@@ -98,16 +111,20 @@ public class CATableView extends Scene {
 		private final SimpleIntegerProperty allImport;
 		private final SimpleIntegerProperty javaImport;
 		private final SimpleIntegerProperty resourceImport;
+		private final SimpleIntegerProperty partialImport;
+		private final SimpleIntegerProperty importLine;
 		private final SimpleIntegerProperty skillRank;
 		private final SimpleIntegerProperty descriptionRate;
 		
 		public Standings(String studentID, int totalLoginTime, int allImport,
-				int javaImport, int resourceImport, int skillRank, int descriptionRate) {
+				int javaImport, int resourceImport, int partialImport, int importLine,int skillRank, int descriptionRate) {
 			this.studentID = new SimpleStringProperty(studentID);
 			this.totalLoginTime = new SimpleIntegerProperty(totalLoginTime);
 			this.allImport = new SimpleIntegerProperty(allImport);
 			this.javaImport = new SimpleIntegerProperty(javaImport);
 			this.resourceImport = new SimpleIntegerProperty(resourceImport);
+			this.partialImport = new SimpleIntegerProperty(partialImport);
+			this.importLine = new SimpleIntegerProperty(importLine);
 			this.skillRank = new SimpleIntegerProperty(skillRank);
 			this.descriptionRate = new SimpleIntegerProperty(descriptionRate);
 		}
@@ -150,6 +167,22 @@ public class CATableView extends Scene {
 		
 		public void setResourceImport(int resourceImport) {
 			this.resourceImport.set(resourceImport);
+		}
+		
+		public int getPartialImport() {
+			return partialImport.get();
+		}
+		
+		public void setPartialImport(int partialImport) {
+			this.partialImport.set(partialImport);
+		}
+		
+		public int getImportLine() {
+			return importLine.get();
+		}
+		
+		public void setImportLine(int importLine) {
+			this.importLine.set(importLine);
 		}
 		
 		public int getSkillRank() {

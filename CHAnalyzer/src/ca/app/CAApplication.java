@@ -128,7 +128,7 @@ public class CAApplication extends Application{
 	 *******************/
 	public void initResultTableScene(Stage stage) {
 		StackPane root = new StackPane();
-		resultTable = new CATableView(root, 600, 500);
+		resultTable = new CATableView(root, 750, 400);
 		VBox vBox = new VBox();
 		Button returnButton = new Button("return");
 		
